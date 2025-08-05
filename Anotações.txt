@@ -1,0 +1,60 @@
+IMERSÃO DADOS COM PYTHON - ALURA
+
+Aula 1 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Base de dados utilizada na imersão:
+https://raw.githubusercontent.com/guilhermeonrails/data-jobs/refs/heads/main/salaries.csv
+
+_Leitura da base de dados
+
+Primeiramente, declaramos uma variávl para ser nossa base, como (df). Para realizar a leitura da base utilizando o pandas usamos:
+df = pd.read_csv (read_csv por que nossa base está no formato csv)
+
+Em seguida o comando (df.head()) conseguimos ver algumas linhas de nossa base.
+
+As informações de nossa base são visualizadas em (df.info())
+
+E uma descrição mais detalhada pode ser visualizada com o comando (df.describe())
+
+_Dimensão
+
+Para saber a quantidade de linhas e colunas de uma base utilizamos o comando (df.shape). Esse comando retorna uma tupla com o número de linhas e colunas.
+Número de linhas [ df.shape[0] ]
+Número de colunas [ df.dhape[1] ]
+
+_Visualizar e Renomear colunas
+
+Se quisermos visualizar as colunas da base, podemos usar o comando (df.columns).
+
+Mas para renomear alguma criamos um dicionario com os valores antigos das colunas com os novos nomes que elas receberam. Ex:
+renomear_colunas = {
+    'work_year': 'ano',
+    'experience_level': 'senioridade',
+}
+
+E ao final para que as alterações possam ser atribuidas as colunas da base é usado o (df.rename(columns=renomear_colunas, inplace=True))
+"inplace = Aplique as alterações diretamente no objeto original, sem criar uma cópia".
+"columns = Irá receber o novo dicionário com os novos valores".
+
+_Frequência de uma categoria
+
+Para saber a quantidade de itens em determinadas colunas usamos:
+df['nome_da_coluna'].value_counts()
+
+_Substituição de valores
+
+Para a substituição de valores, o processo é quase identico ao de renomear. Utilizamos um dicionário para setar os novos valores para as colunas específicas,
+e logo após, aplicamos as alterações.
+df['nome_da_coluna'] = df['nome_da_coluna'].replace(nome_do_dicionário_criado)
+
+Para visualizarmos o resultado:
+df['nome_da_coluna'].value_counts()
+
+_Resumo Estatístico
+
+Para fazer um resumo estatístico apenas das colunas de texto (ou categóricas) da base de dados:
+df.describe(include='object')
+"object = é o tipo de dados usado pelo pandas para colunas que contêm strings".
+
+
+Aula 2 ------------------------------------------------------------------------------------------------------------------------------------------------------------
