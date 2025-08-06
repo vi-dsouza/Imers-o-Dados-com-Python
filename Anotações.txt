@@ -58,3 +58,127 @@ df.describe(include='object')
 
 
 Aula 2 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+LIMPEZA E PREPARAÇÃO DE DADOS
+
+Nessa aula foi demonstrado como se utiliza a biblioteca numpy, que serve para manipulação de dados numéricos como contas matemáticas, entre outros.
+Utilizamos a mesma base de dados da aula anterior e verificamos algumas questões:
+
+_Valor nulo presente
+
+Para identificar se existe algum valor nulo na nossa base de dados utilizamos o método (df.isnull()).
+E para identificarmos a quantidade de valores nulos presentes nas colunas (df.isnull().sum()).
+"sum() = soma os valores nulos, conta quantos nulos há por colunas".
+
+_Valores Únicos
+
+Para identificar os valores únicos da nossa base (sem repetição), é utilizado o método (unique()). 
+Ex: df['work_year'].unique()
+
+_Valores nulos
+
+Utilizamos para filtrar e exibir somente as linhas que possuem pelo menos um valor nulo (NaN) em qualquer coluna da base.
+Ex: df[df.isnull().any(axis=1)]
+"df.isnull() = cria uma tabela booleana (com True) onde há valores nulos".
+".any(axis=1) = verifica linha por linha (axis=1) se existe pelo menos um True (pelo menos um valor nulo naquela linha)".
+"df[...] = filtra o dataframe retornando apenas as linhas onde há pelo menos um valor nulo".
+
+_Excluir Valores nulos
+
+Para que esses valores nulos não atrapalhem o processamento dos nossos dados, podemos realizar algumas manipulações com eles.
+Para essa base de cargos de trabalho na carreira de análise de dados, foi implementado a exclusão desses valores nulos. Porque eram apenas
+10 valores nulos presentes na base, e ela contam com milhares de linhas então a exclusão deles não afetaria significativamente os resultados 
+da nossa análise.
+
+Para excluir esse dados utilizamos: df.dropna()
+O mais importante é não realizar a ateração diretamente na base original, criar uma outra variavel para base e realizar a alteração nessa nova variável.
+
+_Transformação de Tipos
+
+Muitas vezes as bases de dados possuem tipos direfentes de colunas que não são adequadas ao seu verdadeiro tipo, ou seja, a coluna de ano por exemplos 
+pode estar com o tipo float64 (2025.0), e isso para algumas análises pode ser um problema. Então a transformação se faz necessária nesses casos.
+
+Ex: df_limpo = df_limpo.assign(work_year = df_limpo['work_year'].astype(int64))
+
+"astype(int64) = converte a coluna para o tipo inteiro 64 bits".
+"assign() = retorna o novo dataframe com a coluna modificada".
+"df_limpo = sobreescreve o dataframe original com a nova versão".
+
+OBS: Se a coluna que estamos tentando converter contiver valores nulos (NaN) a conversão NÂO vai funcionar, pois NaN não pode ser convertio para inteiro.
+Por isso, remover ou tratar o nulos antes.
+
+_Criando um Dataframe
+
+O pandas nos permite criar dataframes experimentais com python.
+
+df_salarios = pd.DataFrame({
+    'nome': ['Ana', 'Bruno', 'Carlos', 'Daniele', 'Val'],
+    'salarios': [4000, np.nan, 5000, np.nan, 100000]
+})
+
+"pd.DataFrame = é o construtor da classe DataFrame".
+"np.nan = nos permitr criar valore nulos, para implementarmos nas colunas da base".
+A base é criada contendo linhas e colunas e seus valores são atribuido por uma lista, lembrando que para valores numéricos não utilizamos aspas.
+
+_Preenchimento de Valores nulos
+
+Existem várias maneiras de substitução de valores nulos, mas aqui será listado três.
+
+1 - Preenchimento dos valores por meio de MEDIA e MEDIANA dos salários
+
+MEDIA
+
+df_salarios['salario_media'] = df_salarios['salário'].fillna(df_salarios['salario'].mean().round(2))
+
+* Criamos uma nova coluna para a base (salario_media);
+* Selecionamos a coluna salarios (df_salarios['salario']);
+* O método fillna() substitui os valores NaN por algum valor que você passa;
+* Calculamos a média dos valores na coluna 'salario' (sem contar os NaN automaticamente) [ df_salarios['salario'].mean() ];
+* Arredondamos essa média para 2 casas decimais com o .round(2)
+* O resultado do fillna() (coluna 'salário' com os NaN subtituídos) é atribuido à nova coluna 'salario_media';
+
+MEDIANA
+
+df_salarios['salario_mediana'] = df_salarios['salario'].fillna(df_salarios['salario'].median())
+
+* Novamente selecionamos a coluna salário;
+* Substituimos os valores ausente por valores específicos .fillna();
+* Calculamos a mediana da coluna 'salario' (ignorando valores nulos) com .median();
+* O resultado da substituição vai ser salvo na coluna 'salario_mediana'.
+
+2 - Preenchimento por FFIL E BFILL
+
+Criamos um novo dataframe (df_temperatura), contendo dias da semana e suas respectivas temperaturas, contendo valores ausentes.
+
+FFILL - Foreard Fill (Preenchimento para frente)
+
+* Faz o preenchimento do NaN com o último valor não nulo anterior na coluna.
+
+df_temperatura['preenchimento_ffill'] = df_temperatura['temperatura'].ffill()
+
+BFILL - Backward Fill (Preenchimento para trás)
+
+* Preenche o Nan com o próximo valor não nulo posterior na coluna.
+
+df_temperatura['preenchimento_bfill'] = df_temperatura['temperatura'].bfill()
+
+"ffill() é útil para preencher dados que permanecem iguais até uma nova medição (ex: temperatura ao longo do dia)".
+"bfill() pode ser útil para preencher valores faltantes no início de uma série".
+
+OBS: É sempre bom analisar cada caso e verificar qual se adequa mais para sua solução.
+
+3 - Substituir por Valor Fixo
+
+Nós basicamenta vamos substituir os valores nulos por algum outro valor de nossa escolha:
+Como 'Não Informado'.
+
+Criamos um novo dataframe de cidades, onde contem o nome das pessoas e sua cidade com valores nulos.
+
+df_cidades['cidade_preenchi'] = df_cidades['Cidade'].fillna('Não Informado')
+
+* Seleciona a coluna 'cidade' do dataframe;
+* Substitui todos os valores nulos da coluna pelo texto 'Não informado' .fillna('Não informado');
+* Cria uma nova coluna com os valores preenchidos;
+
+
+Aula 3 ------------------------------------------------------------------------------------------------------------------------------------------------------------

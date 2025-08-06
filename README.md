@@ -10,10 +10,11 @@ Imersão promovida pela **Alura** com foco em **análise de dados utilizando Pyt
 ## 🚀 Objetivos do Projeto
 
 - Aprender a manipular dados com **pandas**
-
+- Substituição e manipulação de valores com **numpy**
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
 - Python 🐍
 - pandas
+- numpy
