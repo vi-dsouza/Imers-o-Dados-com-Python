@@ -182,3 +182,204 @@ df_cidades['cidade_preenchi'] = df_cidades['Cidade'].fillna('Não Informado')
 
 
 Aula 3 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+APRENDENDO UM POUCO MAIS SOBRE A CRIAÇÃO DE GRÁFICOS
+
+Nessa aula foi apresentado as bibliotecas para visualização de dados matplotlib, seaborn e plotly.express.
+
+Matplotlib - base para visualização em python, muitas outras utilizam ela, como a seaborn e a pandas.
+_Altamente persobalizável mas muito verbosa.
+
+Ex: 
+    x = [1, 2, 3, 4]
+    y = [10, 20, 25, 30]
+
+    plt.plot(x, y)
+    plt.title('Exemplo Matplotlib')
+    plt.xlabel('Eixo X')
+    plt.ylabel('Eixo Y')
+    plt.show()
+
+Seaborn - Sintaxe mais simples e gráficos estatisticos mais bonitos.
+_Ideal para análise exploratória de dados com visual limpo e integração com pandas. Mas é menos flexível para personalizações específicas.
+
+Ex: 
+    df = pd.DataFrame({
+    'categoria': ['A', 'B', 'C', 'A', 'B', 'C'],
+    'valor': [10, 15, 7, 12, 14, 9]
+    })
+
+    sns.barplot(data=df, x='categoria', y='valor')
+
+Plotly express - uma biblioteca com gráficos interativos.
+_Gráficos interativos com poucos comandos. Otima para dashboards e notebooks, menos controle detalhado que o Plotly completo.
+
+Ex:
+    df = pd.DataFrame({
+    'Categoria': ['A', 'B', 'C'],
+    'Valor': [10, 15, 7]
+    })
+
+    fig = px.bar(df, x='Categoria', y='Valor', title='Exemplo Plotly Express')
+    fig.show()
+
+Comparação rápida:
+
+Característica	        Matplotlib	    Seaborn	        Plotly Express
+Facilidade de uso	    Média/difícil	Fácil	        Muito fácil
+Estética dos gráficos	Básica	        Moderna	        Interativa e moderna
+Personalização	        Alta	        Média	        Boa, mas limitada
+Gráficos interativos	❌ Não	      ❌ Não	         ✅ Sim
+Base	                Nativo	        Usa Matplotlib	Independente (Plotly)
+
+PLOTANDO GRÁFICOS COM PANDAS E Matplotlib
+
+Ex:  
+    df_limpo['senioridade'].value_counts().plot(kind='bar', title='Distribuição de Senioridade')
+    plt.xlabel('Senioridade')
+    plt.ylabel('Quantidade')
+    plt.tight_layout()
+    plt.show()
+
+* Conta quantas vezes a categora aparece na coluna de senioridade df_limpo['senioridade'].value_counts();
+* Gera um gráfico de barras (kind='bar') com o titulo "Distribuição de Senioridade";
+* Rótulo do eixo x (plt.xlabel(''))
+* Rótulo do eixo y (plt.ylabel(''))
+* Ajusta automaticamente os espaçamentos entre os elementos do gráfico para evitar sobreposição;
+* Plota o gráfico (plt.show()).
+
+PLOTANDO GRÁFICO COM SEABORN 
+
+Ex: 
+    plt.figure(figsize=(8, 5))
+    sns.barplot(data=df_limpo, x='senioridade', y='usd') 
+    plt.title('Media Mensal de Senioridade')
+    plt.xlabel('Senioridade')
+    plt.ylabel('Salario Médio Anual (USD)')
+    plt.tight_layout()
+    plt.show()
+
+* Declaramos a altura e largura da figura ( plt.figure(figsize(largura, altura)) );
+* data=df_limpo é o dataframe que contem os dados;
+* x='senioridade' y='usd', o que cada eixo irá mostrar;
+* plt.title('') é onde declaramos o título do gráfico.
+
+ORDENANDO A EXIBIÇÃO DO GRÁFICO 
+
+Ex: 
+    ordem = df_limpo.groupby('senioridade')['usd'].mean().sort_values(ascending=False).index
+
+    plt.figure(figsize=(8, 5))
+    sns.barplot(data=df_limpo, x='senioridade', y='usd', order=ordem)
+    plt.title("Média Mensal de Senioridade")
+    plt.xlabel("Senioridade")
+    plt.ylabel("Salário Médio Anual (USD)")
+    plt.tight_layout()
+    plt.show()
+
+* Agrupamos os dados pela coluna senioridade e calculamos a média dos salários para cada nível de senioridade;
+* Ordena os valores médios do maior para o menor .sort_values(ascending=False)
+* Pega apenas os nomes das categorias (nível de senioridade), na ordem da média salarial decrescente .index.
+
+
+HISTOGRAMA
+
+Ex: 
+    plt.figure(figsize=(10, 5))
+    sns.histplot(df_limpo['usd'], bins=50, kde=True)
+    plt.title('Distribuição dos Salários Anuais')
+    plt.xlabel('Salário em USD')
+    plt.ylabel('Frequência')
+    plt.tight_layout()
+    plt.show()
+
+* sns.histplot() cria um histograma que mostra a distribuição dos dados numéricos;
+* Os dados que seram plotados são somente os salários ['usd'];
+* O histograma será dividido em 50 fixas (intervalos) - (bins=50) -> mais bins = mais detalhamento;
+* Adiciona uma curva KDE (Kernel Density Estimation) por cima do histograma, que mostra uma estimativa suave da distribuição dos dados.
+
+BOXPLOT
+
+Ex: 
+    plt.figure(figsize=(8, 5))
+    sns.boxplot(x=df_limpo['usd'])
+    plt.title('Boxplot Salário')
+    plt.xlabel('Salário em USD')
+    plt.tight_layout()
+    plt.show()
+
+* sns.boxplot plota o gráfico de boxplot da variável salário ['usd'].
+
+BOXPLOT DA SENIORIDADE E SALÁRIO 
+
+Ex: 
+    ordem_senioridade = ['Junior', 'Pleno', 'Senior', 'Executivo']
+
+    plt.figure(figsize=(8, 5))
+    sns.boxplot(x='senioridade', y='usd', data=df_limpo, order=ordem_senioridade, palette='Set2', hue='senioridade')
+    plt.title('Distiubuição por Senioridade')
+    plt.xlabel('Salário em USD')
+    plt.tight_layout()
+    plt.show()
+
+* O gráfico será plotado levando em consideração a ordem de senioridade;
+* 'order' ordena os grupos do eixo x conforme a lista passada;
+* palette='Set2' define uma paleta de cores suave e colorida;
+* hue='senioridade' adiciona uma cor diferente para cada categoria de senioridade, complementando o comando palette.
+
+GRÁFICOS INTERATIVOS COM PLOTLY
+
+Ex: 
+    senioridade_media_salario = df_limpo.groupby('senioridade')['usd'].mean().sort_values(ascending=False).reset_index()
+    fig = px.bar(senioridade_media_salario,
+                x='senioridade',
+                y='usd',
+                title='Média Salarial por Senioridade',
+                labels={'senioridade': 'Nível de Senioridade', 'usd': 'Média Salarial Anual (USD)'})
+    fig.show()
+
+* Agrupa os dados pela coluna senioridade df_limpo.groupby('senioridade')['usd'].mean(), calculando a média do salário para cada grupo;
+* Ordena os resultados da média de forma decrescente .sort_values(ascending=False);
+* Transforma o resultado da série agrupada de volta em um dataframe padrão, com os índices reiniciados .reset_index().
+* px.bar gráfico de barras, passando o dataframe base - as colunas que pertence a cada eixo - titulo - e os rótulos dos eixos.
+* fig.show() plota o gráfico.
+
+GRÁFICO DE PIZZA COM PLOTLY
+
+Ex:
+
+    remoto_contagem = df_limpo['remoto'].value_counts().reset_index()
+    remoto_contagem.columns = ['tipo_trabalho', 'quantidade']
+
+    fig = px.pie(remoto_contagem,
+                names='tipo_trabalho',
+                values='quantidade',
+                title='Proporção dos Tipos de Trabalho',
+                )
+    fig.show()
+
+* Conta quantas vezes cada categoria da coluna remoto aparece e transforma essa contagem em um dataframe para facilitar o uso em gráficos.
+* Seleciona as colunas que queremos;
+* px.pie cria o gráfico de PIZZA;
+* names = define o nomde da cada fatia da pizza com base nas categorias;
+* values = define o tamanho de cada fatia com base no número de ocorrências.
+
+GRÁFICO DE ROSCA COM PLOTLY
+
+Ex: 
+    remoto_contagem = df_limpo['remoto'].value_counts().reset_index()
+    remoto_contagem.columns = ['tipo_trabalho', 'quantidade']
+
+    fig = px.pie(remoto_contagem,
+                names='tipo_trabalho',
+                values='quantidade',
+                title='Proporção dos Tipos de Trabalho',
+                hole=0.5
+                )
+    fig.update_traces(textinfo='percent+label')
+    fig.show()
+
+* hole=0.5 transforma o gráfico de pizza em rosca (50% de buraco no centro);
+* fig.update_traces(textinfo='percent+label') adiciona um rótulo mais porcentagem.
+
+Aula 4 ------------------------------------------------------------------------------------------------------------------------------------------------------------

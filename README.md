@@ -11,6 +11,7 @@ Imersão promovida pela **Alura** com foco em **análise de dados utilizando Pyt
 
 - Aprender a manipular dados com **pandas**
 - Substituição e manipulação de valores com **numpy**
+- Construção de gráficos para visualização dos dados com **matplotlib.pyplot, seaborn e plotly.express**
 ---
 
 ## 🛠️ Tecnologias Utilizadas
@@ -18,3 +19,6 @@ Imersão promovida pela **Alura** com foco em **análise de dados utilizando Pyt
 - Python 🐍
 - pandas
 - numpy
+- matplotlib.pyplot
+- seaborn 
+- plotly.express
