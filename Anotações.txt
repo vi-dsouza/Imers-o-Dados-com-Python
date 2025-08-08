@@ -382,4 +382,163 @@ Ex:
 * hole=0.5 transforma o gráfico de pizza em rosca (50% de buraco no centro);
 * fig.update_traces(textinfo='percent+label') adiciona um rótulo mais porcentagem.
 
-Aula 4 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+Aula 4 ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Uau, essa aula foi repleta de novidades, uma delas foi a criação de um dashboard super interativo com 
+a biblioteca streamlit.
+
+STREAMLIT
+
+_Streamlit é uma biblioteca python de código abreto que permite criar dashboards e aplicações qeb interativas com extrema facilidade, sem precisar escrever html, css ou javascript.
+
+* Permite criar interfaces gráficas com python puro.
+* Ideal para protótipos rápidos, visualizações de dados, dashboards interativos e apresentações.
+* Integra facilmente com pandas, plotly, matplotlib, sklearn, tensorflow.
+* Interface simples baseada em componentes reativos (widgets, gráficos, tabelas...).
+
+RODAR A APLICAÇÃO
+
+Para rodar a aplicação basta executar o comando: streamlit run nome_aplicação.py
+
+COMPONENTES DA CONSTRUÇÃO DO DASHBOARD
+____________________________________________________________________________________________________________________________________________________
+COMPONENTE                  |CÓDIGO                      |DESCRIÇÃO
+____________________________________________________________________________________________________________________________________________________                            |                            |
+Configuração da página      |st.set_page_config(...)     |Define o título da aba, ícone e layout da página para ocupar toda a largura.
+____________________________________________________________________________________________________________________________________________________
+Título principal            |st.title(...)               |Cria um titulo grande no topo do dashboard.
+____________________________________________________________________________________________________________________________________________________
+Texto explicativo           |st.markdown(...)            |Adiciona texto formatado com markdown (descrição, separadores, etc).
+____________________________________________________________________________________________________________________________________________________
+Cabeçalho lateral           |st.sidebar.header(...)      |Adiciona um título na barra lateral para agrupar os filtros para agrupar os filtros.
+____________________________________________________________________________________________________________________________________________________
+Filtro multiplo             |st.sidebar.multiselect(...) |Permite selecionar múltiplas opções em filtros (ano, senioridade, contrato, empresa).
+____________________________________________________________________________________________________________________________________________________
+DataFrame filtrado          |df[...] com isin(...)       |Filtra os dados com base nos filtros escolhidos pelo usuário.
+____________________________________________________________________________________________________________________________________________________
+Métricas resumidas (KPI)    |st.metric(...)              |Exibe valores principais como salário médio, máximo, número de registros, cargo mais comum.
+____________________________________________________________________________________________________________________________________________________
+Layout em colunas           |st.columns(n)               |Divide o layout em n colunas. Usado para kpis e gráficos lado a lado.
+____________________________________________________________________________________________________________________________________________________
+Gráficos com Plotly         |px.bar, px.histogram,       |Cria gráficos interativos: barras, histograma, pizza, mapa, coroplético.
+                            |px.pie, px.choropleth                             
+____________________________________________________________________________________________________________________________________________________
+Exibir gráficos no app      |st.plotly_chart(...)        |Insere o gráfico Plotly no dashboard. Com 'use_container_width=True' para responsividade.
+____________________________________________________________________________________________________________________________________________________
+Mensagem de aviso           |st.warning(...)             |Mostra um alerta amigável se o filtro não retornar dados.
+____________________________________________________________________________________________________________________________________________________
+Tabela de dados final       |st.dataframe(...)           |Mostra o dataframe final, já fltrado, em formato interativo.
+____________________________________________________________________________________________________________________________________________________
+
+Os filtros reagem em tempo real e o df_filtrado contem somento os dados escolhidos.
+
+* isin() verifica se cada valor da linha está dentro da seleção do usuário.
+
+FILTROS 
+
+* Obtém as opções únicas diretamente do dataframe df['coluna'].unique()
+* Cria o filtro na barra lateral com multiselect(...)
+* Filtra o DataFrame principal usando os valores selecionados.
+  (Aqui o .isin(...) verifica se cada valor da linha está dentro da seleção do usuário).
+
+Ex: 
+    #Filtro de Ano
+    anos_disponíveis = sorted(df['ano'].unique())
+    anos_selecionados = st.sidebar.multiselect("Ano", anos_disponíveis, default=anos_disponíveis)
+
+    #Filtro de senioridade
+    senioridades_disponíveis = sorted(df['senioridade'].unique())
+    senioridades_selecionadas = st.sidebar.multiselect("Senioridade", senioridades_disponíveis, default=senioridades_disponíveis)
+
+    #Filtro por tipo de contrato
+    contratos_disponiveis = sorted(df['contrato'].unique())
+    contratos_selecionados = st.sidebar.multiselect("Tipo de Contrato", contratos_disponiveis, default=contratos_disponiveis)
+
+    #Filtro por tamanho da empresa
+    tamanhos_disponíveis = sorted(df['tamanho_empresa'].unique())
+    tamanhos_selecionados = st.sidebar.multiselect("Tamanho da Empresa", tamanhos_disponíveis, default=tamanhos_disponíveis)
+
+    #Filtragem do dataframe
+    #O dataframe proncipal é filtrado com base nas seleções feitas na barra lateral
+    df_filtrado = df[
+        (df['ano'].isin(anos_selecionados)) &
+        (df['senioridade'].isin(senioridades_selecionadas)) &
+        (df['contrato'].isin(contratos_selecionados)) &
+        (df['tamanho_empresa'].isin(tamanhos_selecionados))
+    ]
+
+MÉTRICAS PRINCIPAIS 
+
+São plotadas 4 métricas principais: salario_medio, salario_maximo, total_registros, cargo_mais_frequente.
+
+.mode()[0] - retorna o valor mais frequente de uma série ou coluna, e o 0 seleciona o primeiro valor retornado, caso haja mais de um valor com a mesma frequencia máxima.
+df_filtrado.shape[0] - retorna apenas o número de linhas.
+_Se não tiver dados o else aribuirá valores zerados e vazios.
+
+Logo mais as métricas seram setadas usando o .metric(titulo, variável)
+
+GRÁFICOS
+
+Foram construídos 4 gráficos: barras, histograma, pizza e mapa.
+
+-Barras 
+
+| Linha | Código                                                      | O que faz                                                                                              |
+| ----- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 1     | `with col_graf1:`                                           | Usa o layout em coluna do Streamlit para colocar esse gráfico à esquerda.                              |
+| 2     | `if not df_filtrado.empty:`                                 | Verifica se há dados após os filtros; evita erro ao tentar gerar gráficos com DataFrame vazio.         |
+| 3     | `top_cargos = df_filtrado.groupby('cargo')['usd'].mean()`   | Agrupa o DataFrame por cargo e calcula a **média salarial** (`usd`) de cada cargo.                     |
+| 4     | `.nlargest(10)`                                             | Pega os **10 cargos com maior média salarial**.                                                        |
+| 5     | `.sort_values(ascending=True)`                              | Reordena os dados do menor para o maior (para gráfico horizontal mais intuitivo).                      |
+| 6     | `.reset_index()`                                            | Reorganiza o índice após o agrupamento, tornando `cargo` uma coluna normal novamente.                  |
+| 7     | `grafico_cargos = px.bar(...)`                              | Cria um **gráfico de barras horizontal** com Plotly Express, onde:                                     |
+|       | `x='usd'`, `y='cargo'`                                      | `x`: valor do salário médio, `y`: nome do cargo.                                                       |
+|       | `orientation='h'`                                           | Torna o gráfico **horizontal**.                                                                        |
+|       | `title=...`, `labels=...`                                   | Define título e rótulos amigáveis para os eixos.                                                       |
+| 8     | `grafico_cargos.update_layout(...)`                         | Centraliza o título (`title_x=0.1`) e define a ordem do eixo y com base nos valores (`categoryorder`). |
+| 9     | `st.plotly_chart(grafico_cargos, use_container_width=True)` | Exibe o gráfico no app, adaptando à largura da coluna.                                                 |
+| 10    | `else: st.warning(...)`                                     | Se o `df_filtrado` estiver vazio, exibe uma mensagem de aviso ao usuário.                              |
+
+-Histograma 
+ 
+| Parâmetro                                 | Valor                   | O que faz                                                          |
+| ----------------------------------------- | ----------------------- | ------------------------------------------------------------------ |
+| `df_filtrado`                             | DataFrame filtrado      | Usa apenas os dados com base nos filtros.                          |
+| `x='usd'`                                 | Coluna de salário anual | Plota os salários no eixo X (faixas salariais).                    |
+| `nbins=30`                                | 30 faixas (barras)      | Define o número de **intervalos (bins)** para agrupar os salários. |
+| `title="Distribuição de salários anuais"` | Título do gráfico       | Aparece centralizado no topo.                                      |
+| `labels={...}`                            | Rótulos personalizados  | Muda os nomes dos eixos para legibilidade.                         |
+
+-Pizza 
+
+| Linha | Código                                                                 | O que faz                                                                                  |
+| ----- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1     | `with col_graf3:`                                                      | Insere o conteúdo na **terceira coluna** da seção de gráficos.                             |
+| 2     | `if not df_filtrado.empty:`                                            | Verifica se o DataFrame tem dados (após os filtros aplicados).                             |
+| 3     | `remoto_contagem = df_filtrado['remoto'].value_counts().reset_index()` | Conta quantos registros existem para cada tipo de trabalho (`remoto`, `presencial`, etc.). |
+| 4     | `remoto_contagem.columns = ['tipo_trabalho', 'quantidade']`            | Renomeia as colunas para nomes mais legíveis no gráfico.     
+                              |
+| Parâmetro  | Valor                               | Significado                                                        |
+| ---------- | ----------------------------------- | ------------------------------------------------------------------ |
+| `names`    | `'tipo_trabalho'`                   | Define os **rótulos** das fatias do gráfico.                       |
+| `values`   | `'quantidade'`                      | Define o **tamanho** de cada fatia com base na quantidade.         |
+| `hole=0.5` | 0.5                                 | Cria um **gráfico de rosca (donut)** ao invés de uma pizza sólida. |
+| `title`    | `'Proporção dos tipos de trabalho'` | Título centralizado do gráfico.                                    |
+
+* Exibe tanto o percentual quanto o rótulo da fatia. (grafico_remoto.update_traces(textinfo='percent+label'))
+* Centraliza levemente o titulo no topo do grafico. (grafico_remoto.update_layout(title_x=0.1))
+
+-Mapa 
+
+| Parâmetro                         | Descrição                                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| `locations='residencia_iso3'`     | Espera códigos de país no padrão ISO 3166-1 alpha-3.                          |
+| `color='usd'`                     | Usado para preencher a cor do país baseado no valor salarial.                 |
+| `color_continuous_scale='rdylgn'` | Escala de cor contínua do vermelho (valores baixos) ao verde (valores altos). |
+| `labels`                          | Altera os rótulos exibidos no gráfico.                                        |
+
+* Cria um novo dataframe apenas com registros onde o cargo e data scientist.
+* Agrupa os dados por pais de residencia (residencia_iso3) e calcula a média salarial para cientista de dados em cada pais.
+* Alerta o usuário se nenhum dado estiver disponível para renderizar o mapa.
+
+Por fim mostramos uma tabela do nosso dataframe filtrado pelo usuário.
